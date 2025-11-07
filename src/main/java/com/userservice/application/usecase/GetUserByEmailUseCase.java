@@ -29,7 +29,7 @@ public class GetUserByEmailUseCase {
                 user.getName(),
                 user.getEmail().getValue(),
                 user.getAge(),
-                user.getCreatedAt().toString()
+                user.getCreatedAt() != null ? user.getCreatedAt().toString() : null
         );
     }
 }

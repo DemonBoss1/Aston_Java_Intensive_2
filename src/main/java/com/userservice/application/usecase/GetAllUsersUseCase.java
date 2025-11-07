@@ -1,8 +1,8 @@
 package com.userservice.application.usecase;
 
-import com.userservice.application.dto.UserResponse;
 import com.userservice.domain.model.User;
 import com.userservice.domain.repository.UserRepository;
+import com.userservice.application.dto.UserResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,7 +27,7 @@ public class GetAllUsersUseCase {
                 user.getName(),
                 user.getEmail().getValue(),
                 user.getAge(),
-                user.getCreatedAt().toString()
+                user.getCreatedAt() != null ? user.getCreatedAt().toString() : null
         );
     }
 }
