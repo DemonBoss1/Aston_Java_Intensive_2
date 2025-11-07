@@ -72,7 +72,8 @@ public class ConsoleApplication {
             String email = scanner.nextLine();
 
             System.out.print("Введите возраст: ");
-            Integer age = scanner.nextLine().isEmpty() ? null : Integer.parseInt(scanner.nextLine());
+            String ageString = scanner.nextLine();
+            Integer age= ageString.isEmpty() ? null : Integer.parseInt(ageString);
 
             CreateUserRequest request = new CreateUserRequest(name, email, age);
             UserResponse response = userService.createUser(request);
@@ -141,7 +142,8 @@ public class ConsoleApplication {
             String email = scanner.nextLine();
 
             System.out.print("Введите новый возраст: ");
-            Integer age = scanner.nextLine().isEmpty() ? null : Integer.parseInt(scanner.nextLine());
+            String ageString = scanner.nextLine();
+            Integer age= ageString.isEmpty() ? null : Integer.parseInt(ageString);
 
             UpdateUserRequest request = new UpdateUserRequest(id, name, email, age);
             UserResponse response = userService.updateUser(request);
