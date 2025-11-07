@@ -160,12 +160,12 @@ public class ConsoleApplication {
 
             boolean deleted = userService.deleteUser(id);
             if (deleted) {
-                System.out.println("✅ Пользователь удален: ID=" + id);
+                System.out.println("Пользователь удален: ID=" + id);
             } else {
-                System.out.println("❌ Пользователь не найден: ID=" + id);
+                System.out.println("Пользователь не найден: ID=" + id);
             }
         } catch (Exception e) {
-            System.out.println("❌ Ошибка: " + e.getMessage());
+            System.out.println("Ошибка: " + e.getMessage());
         }
     }
 
@@ -177,13 +177,13 @@ public class ConsoleApplication {
             Optional<UserResponse> user = userService.getUserByEmail(email);
             if (user.isPresent()) {
                 UserResponse response = user.get();
-                System.out.printf("✅ Найден пользователь: ID=%d, Name=%s, Email=%s, Age=%d%n",
+                System.out.printf("Найден пользователь: ID=%d, Name=%s, Email=%s, Age=%d%n",
                         response.getId(), response.getName(), response.getEmail(), response.getAge());
             } else {
-                System.out.println("❌ Пользователь не найден");
+                System.out.println("Пользователь не найден");
             }
         } catch (Exception e) {
-            System.out.println("❌ Ошибка: " + e.getMessage());
+            System.out.println("Ошибка: " + e.getMessage());
         }
     }
 }
