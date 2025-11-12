@@ -6,6 +6,7 @@ import com.userservice.domain.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
+
 public class UserService {
     private final CreateUserUseCase createUserUseCase;
     private final GetUserByIdUseCase getUserByIdUseCase;
