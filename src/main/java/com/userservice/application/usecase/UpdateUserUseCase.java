@@ -5,7 +5,10 @@ import com.userservice.domain.model.Email;
 import com.userservice.domain.repository.UserRepository;
 import com.userservice.application.dto.UpdateUserRequest;
 import com.userservice.application.dto.UserResponse;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
+@Service
 public class UpdateUserUseCase {
     private final UserRepository userRepository;
 

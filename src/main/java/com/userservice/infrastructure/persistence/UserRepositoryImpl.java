@@ -11,11 +11,14 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Repository
 public class UserRepositoryImpl implements UserRepository {
     private static final Logger logger = LogManager.getLogger(UserRepositoryImpl.class);
     private final SessionFactory sessionFactory;

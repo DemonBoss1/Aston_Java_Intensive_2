@@ -3,10 +3,13 @@ package com.userservice.application.usecase;
 import com.userservice.domain.model.User;
 import com.userservice.domain.repository.UserRepository;
 import com.userservice.application.dto.UserResponse;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class GetAllUsersUseCase {
     private final UserRepository userRepository;
 
