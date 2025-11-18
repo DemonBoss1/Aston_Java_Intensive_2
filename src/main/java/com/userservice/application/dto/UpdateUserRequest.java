@@ -1,21 +1,28 @@
 package com.userservice.application.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UpdateUserRequest {
-    private final Long id;
-    private final String name;
-    private final String email;
-    private final Integer age;
 
-    public UpdateUserRequest(Long id, String name, String email, Integer age) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.age = age;
-    }
+    @NotNull(message = "ID is required")
+    private Long id;
 
-    // Геттеры
-    public Long getId() { return id; }
-    public String getName() { return name; }
-    public String getEmail() { return email; }
-    public Integer getAge() { return age; }
+    @NotBlank(message = "Name is required")
+    private String name;
+
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email should be valid")
+    private String email;
+
+    @PositiveOrZero(message = "Age must be positive or zero")
+    private Integer age;
 }

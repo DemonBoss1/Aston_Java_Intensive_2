@@ -1,7 +1,10 @@
 package com.userservice.application.usecase;
 
 import com.userservice.domain.repository.UserRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
+@Service
 public class DeleteUserUseCase {
     private final UserRepository userRepository;
 

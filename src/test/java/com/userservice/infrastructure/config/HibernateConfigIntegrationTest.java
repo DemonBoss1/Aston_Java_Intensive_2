@@ -1,6 +1,7 @@
 package com.userservice.infrastructure.config;
 
 import com.userservice.infrastructure.entity.UserEntity;
+import com.userservice.infrastructure.persistence.hibernate.HibernateConfig;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;

@@ -1,12 +1,15 @@
 package com.userservice.application.service;
 
+import com.userservice.application.dto.CreateUserRequest;
+import com.userservice.application.dto.UpdateUserRequest;
+import com.userservice.application.dto.UserResponse;
 import com.userservice.application.usecase.*;
-import com.userservice.application.dto.*;
-import com.userservice.domain.repository.UserRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class UserService {
     private final CreateUserUseCase createUserUseCase;
     private final GetUserByIdUseCase getUserByIdUseCase;
@@ -15,13 +18,19 @@ public class UserService {
     private final DeleteUserUseCase deleteUserUseCase;
     private final GetUserByEmailUseCase getUserByEmailUseCase;
 
-    public UserService(UserRepository userRepository) {
-        this.createUserUseCase = new CreateUserUseCase(userRepository);
-        this.getUserByIdUseCase = new GetUserByIdUseCase(userRepository);
-        this.getAllUsersUseCase = new GetAllUsersUseCase(userRepository);
-        this.updateUserUseCase = new UpdateUserUseCase(userRepository);
-        this.deleteUserUseCase = new DeleteUserUseCase(userRepository);
-        this.getUserByEmailUseCase = new GetUserByEmailUseCase(userRepository);
+    public UserService(
+            CreateUserUseCase createUserUseCase,
+            GetUserByIdUseCase getUserByIdUseCase,
+            GetAllUsersUseCase getAllUsersUseCase,
+            UpdateUserUseCase updateUserUseCase,
+            DeleteUserUseCase deleteUserUseCase,
+            GetUserByEmailUseCase getUserByEmailUseCase) {
+        this.createUserUseCase = createUserUseCase;
+        this.getUserByIdUseCase = getUserByIdUseCase;
+        this.getAllUsersUseCase = getAllUsersUseCase;
+        this.updateUserUseCase = updateUserUseCase;
+        this.deleteUserUseCase = deleteUserUseCase;
+        this.getUserByEmailUseCase = getUserByEmailUseCase;
     }
 
     public UserResponse createUser(CreateUserRequest request) {
