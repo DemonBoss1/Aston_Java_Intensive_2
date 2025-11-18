@@ -8,6 +8,7 @@ import com.userservice.infrastructure.entity.UserEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
@@ -17,23 +18,33 @@ import java.util.stream.Collectors;
 
 public class UserRepositoryImpl implements UserRepository {
     private static final Logger logger = LogManager.getLogger(UserRepositoryImpl.class);
+    private final SessionFactory sessionFactory;
+
+    public UserRepositoryImpl() {
+        this.sessionFactory = HibernateConfig.getSessionFactory();
+    }
+
+    public UserRepositoryImpl(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
 
     @Override
     public Optional<User> findById(Long id) {
         logger.debug("Поиск пользователя по ID: {}", id);
 
-        try (Session session = HibernateConfig.getSessionFactory().openSession()) {
+        try (Session session = sessionFactory.openSession()) {
             UserEntity entity = session.get(UserEntity.class, id);
+            User user = toDomain(entity);
 
-            if (entity != null) {
-                logger.debug("Пользователь найден по ID {}: {}", id, entity.getEmail());
+            if (user != null) {
+                logger.debug("Пользователь найден: ID={}", id);
             } else {
-                logger.debug("Пользователь не найден по ID: {}", id);
+                logger.debug("Пользователь не найден: ID={}", id);
             }
 
-            return Optional.ofNullable(toDomain(entity));
+            return Optional.ofNullable(user);
         } catch (Exception e) {
-            logger.error("Ошибка при поиске пользователя по ID {}: {}", id, e.getMessage(), e);
+            logger.error("Ошибка при поиске пользователя по ID: {}", id, e);
             return Optional.empty();
         }
     }
@@ -42,7 +53,7 @@ public class UserRepositoryImpl implements UserRepository {
     public List<User> findAll() {
         logger.debug("Получение всех пользователей");
 
-        try (Session session = HibernateConfig.getSessionFactory().openSession()) {
+        try (Session session = sessionFactory.openSession()) {
             List<UserEntity> entities = session.createQuery(
                     "FROM UserEntity",
                     UserEntity.class
@@ -62,7 +73,7 @@ public class UserRepositoryImpl implements UserRepository {
     public Optional<User> findByEmail(Email email) {
         logger.debug("Поиск пользователя по email: {}", email.getValue());
 
-        try (Session session = HibernateConfig.getSessionFactory().openSession()) {
+        try (Session session = sessionFactory.openSession()) {
             Query<UserEntity> query = session.createQuery(
                     "FROM UserEntity WHERE email = :email",
                     UserEntity.class
@@ -88,7 +99,7 @@ public class UserRepositoryImpl implements UserRepository {
         logger.info("Сохранение пользователя: {}", user.getEmail().getValue());
 
         Transaction transaction = null;
-        try (Session session = HibernateConfig.getSessionFactory().openSession()) {
+        try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
             UserEntity entity = toEntity(user);
             session.persist(entity);
@@ -116,7 +127,7 @@ public class UserRepositoryImpl implements UserRepository {
                 user.getEmail().getValue(), user.getId());
 
         Transaction transaction = null;
-        try (Session session = HibernateConfig.getSessionFactory().openSession()) {
+        try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
             UserEntity entity = toEntity(user);
             session.merge(entity);
@@ -141,7 +152,7 @@ public class UserRepositoryImpl implements UserRepository {
         logger.info("Удаление пользователя с ID: {}", id);
 
         Transaction transaction = null;
-        try (Session session = HibernateConfig.getSessionFactory().openSession()) {
+        try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
             UserEntity entity = session.get(UserEntity.class, id);
 

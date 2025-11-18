@@ -14,32 +14,36 @@ public class UpdateUserUseCase {
     }
 
     public UserResponse execute(UpdateUserRequest request) {
-        User existingUser = findUserById(request.getId());
-        Email newEmail = new Email(request.getEmail());
+        validateRequest(request);
 
-        ensureEmailIsAvailable(existingUser, newEmail);
+        User existingUser = userRepository.findById(request.getId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + request.getId()));
+
+        Email newEmail = new Email(request.getEmail());
+        if (!existingUser.getEmail().equals(newEmail)) {
+            ensureEmailIsAvailable(newEmail);
+        }
 
         User updatedUser = existingUser.update(
                 request.getName(),
                 newEmail,
-                request.getAge());
+                request.getAge()
+        );
 
         userRepository.update(updatedUser);
 
         return toResponse(updatedUser);
     }
 
-    private User findUserById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + id));
+    private void validateRequest(UpdateUserRequest request) {
+        if (request.getId() == null || request.getId() <= 0) {
+            throw new IllegalArgumentException("Invalid user ID");
+        }
     }
 
-    private void ensureEmailIsAvailable(User existingUser, Email newEmail) {
-        boolean isEmailChanged = !existingUser.getEmail().equals(newEmail);
-        boolean isEmailTaken = userRepository.existsByEmail(newEmail);
-
-        if (isEmailChanged && isEmailTaken) {
-            throw new IllegalArgumentException("User with email " + newEmail.getValue() + " already exists");
+    private void ensureEmailIsAvailable(Email email) {
+        if (userRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("User with this email already exists");
         }
     }
 
@@ -49,7 +53,7 @@ public class UpdateUserUseCase {
                 user.getName(),
                 user.getEmail().getValue(),
                 user.getAge(),
-                user.getCreatedAt().toString()
+                user.getCreatedAt() != null ? user.getCreatedAt().toString() : null
         );
     }
 }
