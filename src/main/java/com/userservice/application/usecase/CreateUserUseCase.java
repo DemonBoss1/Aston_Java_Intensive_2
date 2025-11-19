@@ -38,7 +38,7 @@ public class CreateUserUseCase {
                 user.getName(),
                 user.getEmail().getValue(),
                 user.getAge(),
-                user.getCreatedAt() != null ? user.getCreatedAt().toString() : null
+                user.getCreatedAt()
         );
     }
 }
