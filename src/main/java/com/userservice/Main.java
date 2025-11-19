@@ -1,9 +1,7 @@
 package com.userservice;
 
-import com.userservice.application.service.UserService;
 import com.userservice.config.AppConfig;
-import com.userservice.infrastructure.config.HibernateConfig;
-import com.userservice.infrastructure.persistence.UserRepositoryImpl;
+import com.userservice.infrastructure.persistence.hibernate.HibernateConfig;
 import com.userservice.presentation.console.ConsoleApplication;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 

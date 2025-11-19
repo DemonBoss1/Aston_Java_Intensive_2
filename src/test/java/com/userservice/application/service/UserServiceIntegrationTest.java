@@ -3,7 +3,7 @@ package com.userservice.application.service;
 import com.userservice.application.dto.*;
 import com.userservice.config.AppConfig;
 import com.userservice.domain.repository.UserRepository;
-import com.userservice.infrastructure.config.HibernateConfig;
+import com.userservice.infrastructure.persistence.hibernate.HibernateConfig;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;

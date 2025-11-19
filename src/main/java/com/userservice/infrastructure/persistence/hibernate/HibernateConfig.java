@@ -1,4 +1,4 @@
-package com.userservice.infrastructure.config;
+package com.userservice.infrastructure.persistence.hibernate;
 
 import com.userservice.infrastructure.entity.UserEntity;
 import org.hibernate.SessionFactory;

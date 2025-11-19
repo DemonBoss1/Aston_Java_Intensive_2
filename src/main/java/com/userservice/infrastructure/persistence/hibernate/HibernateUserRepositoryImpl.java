@@ -1,60 +1,53 @@
-package com.userservice.infrastructure.persistence;
+package com.userservice.infrastructure.persistence.hibernate;
 
 import com.userservice.domain.model.Email;
 import com.userservice.domain.model.User;
 import com.userservice.domain.repository.UserRepository;
-import com.userservice.infrastructure.config.HibernateConfig;
 import com.userservice.infrastructure.entity.UserEntity;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Repository
-public class UserRepositoryImpl implements UserRepository {
-    private static final Logger logger = LogManager.getLogger(UserRepositoryImpl.class);
+@Profile("hibernate")
+@RequiredArgsConstructor
+public class HibernateUserRepositoryImpl implements UserRepository {
     private final SessionFactory sessionFactory;
-
-    public UserRepositoryImpl() {
-        this.sessionFactory = HibernateConfig.getSessionFactory();
-    }
-
-    public UserRepositoryImpl(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
 
     @Override
     public Optional<User> findById(Long id) {
-        logger.debug("Поиск пользователя по ID: {}", id);
+        log.debug("[HIBERNATE] Поиск пользователя по ID: {}", id);
 
         try (Session session = sessionFactory.openSession()) {
             UserEntity entity = session.get(UserEntity.class, id);
             User user = toDomain(entity);
 
             if (user != null) {
-                logger.debug("Пользователь найден: ID={}", id);
+                log.debug("[HIBERNATE] Пользователь найден: ID={}", id);
             } else {
-                logger.debug("Пользователь не найден: ID={}", id);
+                log.debug("[HIBERNATE] Пользователь не найден: ID={}", id);
             }
 
             return Optional.ofNullable(user);
         } catch (Exception e) {
-            logger.error("Ошибка при поиске пользователя по ID: {}", id, e);
+            log.error("[HIBERNATE] Ошибка при поиске пользователя по ID: {}", id, e);
             return Optional.empty();
         }
     }
 
     @Override
     public List<User> findAll() {
-        logger.debug("Получение всех пользователей");
+        log.debug("[HIBERNATE] Получение всех пользователей");
 
         try (Session session = sessionFactory.openSession()) {
             List<UserEntity> entities = session.createQuery(
@@ -62,19 +55,19 @@ public class UserRepositoryImpl implements UserRepository {
                     UserEntity.class
             ).list();
 
-            logger.debug("Найдено {} пользователей", entities.size());
+            log.debug("[HIBERNATE] Найдено {} пользователей", entities.size());
             return entities.stream()
                     .map(this::toDomain)
                     .collect(Collectors.toList());
         } catch (Exception e) {
-            logger.error("Ошибка при получении всех пользователей: {}", e.getMessage(), e);
+            log.error("[HIBERNATE] Ошибка при получении всех пользователей: {}", e.getMessage(), e);
             return List.of();
         }
     }
 
     @Override
     public Optional<User> findByEmail(Email email) {
-        logger.debug("Поиск пользователя по email: {}", email.getValue());
+        log.debug("[HIBERNATE] Поиск пользователя по email: {}", email.getValue());
 
         try (Session session = sessionFactory.openSession()) {
             Query<UserEntity> query = session.createQuery(
@@ -85,21 +78,21 @@ public class UserRepositoryImpl implements UserRepository {
             UserEntity entity = query.uniqueResult();
 
             if (entity != null) {
-                logger.debug("Пользователь найден по email {}: ID {}", email.getValue(), entity.getId());
+                log.debug("[HIBERNATE] Пользователь найден по email {}: ID {}", email.getValue(), entity.getId());
             } else {
-                logger.debug("Пользователь не найден по email: {}", email.getValue());
+                log.debug("[HIBERNATE] Пользователь не найден по email: {}", email.getValue());
             }
 
             return Optional.ofNullable(toDomain(entity));
         } catch (Exception e) {
-            logger.error("Ошибка при поиске пользователя по email {}: {}", email.getValue(), e.getMessage(), e);
+            log.error("[HIBERNATE] Ошибка при поиске пользователя по email {}: {}", email.getValue(), e.getMessage(), e);
             return Optional.empty();
         }
     }
 
     @Override
     public User save(User user) {
-        logger.info("Сохранение пользователя: {}", user.getEmail().getValue());
+        log.info("[HIBERNATE] Сохранение пользователя: {}", user.getEmail().getValue());
 
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
@@ -109,16 +102,16 @@ public class UserRepositoryImpl implements UserRepository {
             transaction.commit();
 
             User savedUser = toDomain(entity);
-            logger.info("Пользователь успешно сохранен: {} (ID: {})",
+            log.info("[HIBERNATE] Пользователь успешно сохранен: {} (ID: {})",
                     savedUser.getEmail().getValue(), savedUser.getId());
 
             return savedUser;
         } catch (Exception e) {
             if (transaction != null) {
-                logger.warn("Откат транзакции при сохранении пользователя: {}", user.getEmail().getValue());
+                log.warn("[HIBERNATE] Откат транзакции при сохранении пользователя: {}", user.getEmail().getValue());
                 transaction.rollback();
             }
-            logger.error("Ошибка при сохранении пользователя {}: {}",
+            log.error("[HIBERNATE] Ошибка при сохранении пользователя {}: {}",
                     user.getEmail().getValue(), e.getMessage(), e);
             throw new RuntimeException("Failed to save user: " + user.getEmail().getValue(), e);
         }
@@ -126,7 +119,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void update(User user) {
-        logger.info("Обновление пользователя: {} (ID: {})",
+        log.info("[HIBERNATE] Обновление пользователя: {} (ID: {})",
                 user.getEmail().getValue(), user.getId());
 
         Transaction transaction = null;
@@ -136,15 +129,15 @@ public class UserRepositoryImpl implements UserRepository {
             session.merge(entity);
             transaction.commit();
 
-            logger.info("Пользователь успешно обновлен: {} (ID: {})",
+            log.info("[HIBERNATE] Пользователь успешно обновлен: {} (ID: {})",
                     user.getEmail().getValue(), user.getId());
         } catch (Exception e) {
             if (transaction != null) {
-                logger.warn("Откат транзакции при обновлении пользователя: {} (ID: {})",
+                log.warn("[HIBERNATE] Откат транзакции при обновлении пользователя: {} (ID: {})",
                         user.getEmail().getValue(), user.getId());
                 transaction.rollback();
             }
-            logger.error("Ошибка при обновлении пользователя {} (ID: {}): {}",
+            log.error("[HIBERNATE] Ошибка при обновлении пользователя {} (ID: {}): {}",
                     user.getEmail().getValue(), user.getId(), e.getMessage(), e);
             throw new RuntimeException("Failed to update user: " + user.getEmail().getValue(), e);
         }
@@ -152,7 +145,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void delete(Long id) {
-        logger.info("Удаление пользователя с ID: {}", id);
+        log.info("[HIBERNATE] Удаление пользователя с ID: {}", id);
 
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
@@ -160,30 +153,30 @@ public class UserRepositoryImpl implements UserRepository {
             UserEntity entity = session.get(UserEntity.class, id);
 
             if (entity != null) {
-                logger.debug("Найден пользователь для удаления: {} (ID: {})", entity.getEmail(), id);
+                log.debug("[HIBERNATE] Найден пользователь для удаления: {} (ID: {})", entity.getEmail(), id);
                 session.remove(entity);
                 transaction.commit();
-                logger.info("Пользователь успешно удален: {} (ID: {})", entity.getEmail(), id);
+                log.info("[HIBERNATE] Пользователь успешно удален: {} (ID: {})", entity.getEmail(), id);
             } else {
-                logger.warn("Пользователь для удаления не найден: ID {}", id);
+                log.warn("[HIBERNATE] Пользователь для удаления не найден: ID {}", id);
                 transaction.commit(); // Все равно коммитим, т.к. удалять нечего
             }
         } catch (Exception e) {
             if (transaction != null) {
-                logger.warn("Откат транзакции при удалении пользователя ID {}: {}", id, e.getMessage());
+                log.warn("[HIBERNATE] Откат транзакции при удалении пользователя ID {}: {}", id, e.getMessage());
                 transaction.rollback();
             }
-            logger.error("Ошибка при удалении пользователя ID {}: {}", id, e.getMessage(), e);
+            log.error("[HIBERNATE] Ошибка при удалении пользователя ID {}: {}", id, e.getMessage(), e);
             throw new RuntimeException("Failed to delete user with ID: " + id, e);
         }
     }
 
     @Override
     public boolean existsByEmail(Email email) {
-        logger.debug("Проверка существования пользователя с email: {}", email.getValue());
+        log.debug("[HIBERNATE] Проверка существования пользователя с email: {}", email.getValue());
 
         boolean exists = findByEmail(email).isPresent();
-        logger.debug("Пользователь с email {} {}существует",
+        log.debug("[HIBERNATE] Пользователь с email {} {}существует",
                 email.getValue(), exists ? "" : "не ");
 
         return exists;
@@ -200,7 +193,7 @@ public class UserRepositoryImpl implements UserRepository {
                 entity.getCreatedAt()
         );
 
-        logger.trace("Преобразование UserEntity -> User: {} (ID: {})",
+        log.trace("[HIBERNATE] Преобразование UserEntity -> User: {} (ID: {})",
                 entity.getEmail(), entity.getId());
 
         return user;
@@ -215,7 +208,7 @@ public class UserRepositoryImpl implements UserRepository {
                 user.getCreatedAt()
         );
 
-        logger.trace("Преобразование User -> UserEntity: {} (ID: {})",
+        log.trace("[HIBERNATE] Преобразование User -> UserEntity: {} (ID: {})",
                 user.getEmail().getValue(), user.getId());
 
         return entity;
