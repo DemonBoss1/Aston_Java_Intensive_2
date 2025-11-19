@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
-@Profile("springdata")
+@Profile({"springdata", "test"})
 @Primary
 @RequiredArgsConstructor
 public class SpringDataUserRepositoryImpl implements UserRepository {
