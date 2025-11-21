@@ -1,18 +1,24 @@
 package com.userservice.application.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PositiveOrZero;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class CreateUserRequest {
-    private final String name;
-    private final String email;
-    private final Integer age;
 
-    public CreateUserRequest(String name, String email, Integer age) {
-        this.name = name;
-        this.email = email;
-        this.age = age;
-    }
+    @NotBlank(message = "Name is required")
+    private String name;
 
-    public String getName() { return name; }
-    public String getEmail() { return email; }
-    public Integer getAge() { return age; }
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email should be valid")
+    private String email;
+
+    @PositiveOrZero(message = "Age must be positive or zero")
+    private Integer age;
 }
-

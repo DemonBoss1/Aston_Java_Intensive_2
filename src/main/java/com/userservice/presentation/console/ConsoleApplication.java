@@ -2,11 +2,14 @@ package com.userservice.presentation.console;
 
 import com.userservice.application.service.UserService;
 import com.userservice.application.dto.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
+@Component
 public class ConsoleApplication {
     private final UserService userService;
     private final Scanner scanner;

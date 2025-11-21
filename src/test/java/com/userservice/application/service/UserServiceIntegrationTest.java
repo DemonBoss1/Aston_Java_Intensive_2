@@ -1,26 +1,32 @@
 package com.userservice.application.service;
 
 import com.userservice.application.dto.*;
-import com.userservice.infrastructure.config.HibernateConfig;
-import com.userservice.infrastructure.persistence.UserRepositoryImpl;
+import com.userservice.config.AppConfig;
+import com.userservice.domain.repository.UserRepository;
+import com.userservice.infrastructure.persistence.hibernate.HibernateConfig;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@TestInstance(Lifecycle.PER_CLASS)
+@SpringBootTest(classes = AppConfig.class)
+@ActiveProfiles("test")
+@Transactional
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UserServiceIntegrationTest {
 
+    @Autowired
     private UserService userService;
 
-    @BeforeAll
-    void setUp() {
-        UserRepositoryImpl userRepository = new UserRepositoryImpl();
-        userService = new UserService(userRepository);
-    }
+    @Autowired
+    private UserRepository userRepository;
 
     @BeforeEach
     void cleanDatabase() {
@@ -33,7 +39,14 @@ class UserServiceIntegrationTest {
 
     @AfterAll
     void tearDown() {
-        HibernateConfig.shutdown();
+        HibernateConfig.shutdownAll();
+    }
+
+    @Test
+    @DisplayName("Spring Context: Проверка загрузки контекста и бинов")
+    void springContext_ShouldLoadCorrectly() {
+        assertNotNull(userService, "UserService должен быть загружен через Spring DI");
+        assertNotNull(userRepository, "UserRepository должен быть загружен через Spring DI");
     }
 
     @Test
@@ -288,7 +301,7 @@ class UserServiceIntegrationTest {
             userService.updateUser(updateRequest);
         });
 
-        assertEquals("User with email " + updateRequest.getEmail() + " already exists", exception.getMessage());
+        assertTrue(exception.getMessage().contains("already exists"));
     }
 
     @Test

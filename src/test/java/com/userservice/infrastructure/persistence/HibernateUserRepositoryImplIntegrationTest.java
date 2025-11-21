@@ -1,26 +1,26 @@
 package com.userservice.infrastructure.persistence;
 
-import com.userservice.domain.model.User;
-import com.userservice.domain.model.Email;
-import com.userservice.infrastructure.config.HibernateConfig;
 import com.userservice.TestContainersBaseTest;
+import com.userservice.domain.model.Email;
+import com.userservice.domain.model.User;
+import com.userservice.infrastructure.persistence.hibernate.HibernateConfig;
+import com.userservice.infrastructure.persistence.hibernate.HibernateUserRepositoryImpl;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
-class UserRepositoryImplIntegrationTest extends TestContainersBaseTest {
+class HibernateUserRepositoryImplIntegrationTest extends TestContainersBaseTest {
 
-    private UserRepositoryImpl userRepository;
+    private HibernateUserRepositoryImpl userRepository;
     private SessionFactory testSessionFactory;
 
     @BeforeEach
@@ -31,7 +31,7 @@ class UserRepositoryImplIntegrationTest extends TestContainersBaseTest {
                 getPassword()
         );
 
-        userRepository = new UserRepositoryImpl(testSessionFactory);
+        userRepository = new HibernateUserRepositoryImpl(testSessionFactory);
         cleanDatabase();
     }
 

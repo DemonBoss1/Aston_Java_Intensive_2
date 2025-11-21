@@ -4,9 +4,12 @@ import com.userservice.domain.model.Email;
 import com.userservice.domain.model.User;
 import com.userservice.domain.repository.UserRepository;
 import com.userservice.application.dto.UserResponse;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Service
 public class GetUserByEmailUseCase {
     private final UserRepository userRepository;
 
@@ -29,7 +32,7 @@ public class GetUserByEmailUseCase {
                 user.getName(),
                 user.getEmail().getValue(),
                 user.getAge(),
-                user.getCreatedAt() != null ? user.getCreatedAt().toString() : null
+                user.getCreatedAt()
         );
     }
 }
