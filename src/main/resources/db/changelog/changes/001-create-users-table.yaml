@@ -1,0 +1,80 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-users-table
+      author: your-name
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: age
+                  type: integer
+                  constraints:
+                    nullable: true
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+                    defaultValueComputed: CURRENT_TIMESTAMP
+
+        - createIndex:
+            indexName: idx_users_email
+            tableName: users
+            columns:
+              - column:
+                  name: email
+                  type: varchar(100)
+
+        - createIndex:
+            indexName: idx_users_created_at
+            tableName: users
+            columns:
+              - column:
+                  name: created_at
+                  type: timestamp
+
+  - changeSet:
+      id: 001-1-add-constraints
+      author: your-name
+      changes:
+        - addUniqueConstraint:
+            columnNames: email
+            constraintName: uk_users_email
+            tableName: users
+
+        - addNotNullConstraint:
+            columnName: name
+            tableName: users
+
+        - addNotNullConstraint:
+            columnName: email
+            tableName: users
+
+        - addCheckConstraint:
+            constraintName: chk_users_age_positive
+            tableName: users
+            condition: "age IS NULL OR age > 0"
+
+        - addCheckConstraint:
+            constraintName: chk_users_email_format
+            tableName: users
+            condition: "email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$'"

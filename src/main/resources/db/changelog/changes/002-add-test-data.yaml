@@ -1,0 +1,44 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-add-test-users
+      author: your-name
+      context: test, dev
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: name
+                  value: "John Doe"
+              - column:
+                  name: email
+                  value: "john.doe@example.com"
+              - column:
+                  name: age
+                  value: 30
+
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: name
+                  value: "Jane Smith"
+              - column:
+                  name: email
+                  value: "jane.smith@example.com"
+              - column:
+                  name: age
+                  value: 25
+
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: name
+                  value: "Bob Johnson"
+              - column:
+                  name: email
+                  value: "bob.johnson@example.com"
+              - column:
+                  name: age
+                  valueNumeric: 35
