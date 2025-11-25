@@ -1,0 +1,60 @@
+spring:
+  application:
+    name: notification-service
+  profiles:
+    active: dev
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: t0428648@gmail.com
+    password: fhyg ydtm ksbz ynau
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+        mime:
+          charset: UTF-8
+        encoding: UTF-8
+        charset: UTF-8
+    default-encoding: UTF-8
+  messages:
+    basename: messages/messages
+    encoding: UTF-8
+    always-use-message-format: true
+    use-code-as-default-message: false
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: notification-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring.json.trusted.packages: "com.notificationservice.domain.model,com.userservice.domain.model"
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: "com.notificationservice.domain.model.UserEvent"
+
+app:
+  email:
+    enabled: true
+    default-locale: en
+    from-address: "t0428648@gmail.com"
+
+kafka:
+  topics:
+    user-events: user-events-topic
+
+server:
+  port: 8081
+
+logging:
+  level:
+    com.notificationservice: DEBUG
+    org.springframework.kafka: DEBUG
