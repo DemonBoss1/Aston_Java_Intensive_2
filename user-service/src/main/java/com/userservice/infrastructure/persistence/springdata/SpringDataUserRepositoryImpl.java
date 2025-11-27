@@ -2,8 +2,10 @@ package com.userservice.infrastructure.persistence.springdata;
 
 import com.userservice.domain.model.Email;
 import com.userservice.domain.model.User;
+import com.userservice.domain.model.UserEvent;
 import com.userservice.domain.repository.UserRepository;
 import com.userservice.infrastructure.entity.UserEntity;
+import com.userservice.infrastructure.messaging.UserEventProducer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
@@ -23,6 +25,7 @@ public class SpringDataUserRepositoryImpl implements UserRepository {
 
     private final JpaUserRepository jpaUserRepository;
     private final UserMapper userMapper;
+    private final UserEventProducer userEventProducer;
 
     @Override
     public Optional<User> findById(Long id) {
@@ -77,6 +80,11 @@ public class SpringDataUserRepositoryImpl implements UserRepository {
         log.info("[SPRING-DATA-JPA] Пользователь успешно сохранен: {} (ID: {})",
                 savedUser.getEmail().getValue(), savedUser.getId());
 
+        userEventProducer.sendUserEvent(UserEvent.create(
+                savedUser.getEmail().getValue(),
+                savedUser.getName()
+        ));
+
         return savedUser;
     }
 
@@ -85,7 +93,6 @@ public class SpringDataUserRepositoryImpl implements UserRepository {
         log.info("[SPRING-DATA-JPA] Обновление пользователя: {} (ID: {})",
                 user.getEmail().getValue(), user.getId());
 
-        // Проверяем существование пользователя
         if (!jpaUserRepository.existsById(user.getId())) {
             throw new IllegalArgumentException("User not found with ID: " + user.getId());
         }
@@ -106,7 +113,17 @@ public class SpringDataUserRepositoryImpl implements UserRepository {
             return;
         }
 
-        jpaUserRepository.deleteById(id);
+        Optional<UserEntity> userToDelete = jpaUserRepository.findById(id);
+        if (userToDelete.isPresent()) {
+            userEventProducer.sendUserEvent(UserEvent.delete(
+                    userToDelete.get().getEmail(),
+                    userToDelete.get().getName()
+            ));
+        }
+
+        if (jpaUserRepository.existsById(id)) {
+            jpaUserRepository.deleteById(id);
+        }
         log.info("[SPRING-DATA-JPA] Пользователь успешно удален: ID {}", id);
     }
 

@@ -28,6 +28,26 @@ spring:
           lob:
             non_contextual_creation: true
 
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    properties:
+      spring.json.add.type.headers: true
+
+kafka:
+  topics:
+    user-events: user-events-topic
+
+notification:
+  service:
+    base-url: http://localhost:8081
+    rest:
+      enabled: true
+    kafka:
+      enabled: true
+
 server:
   port: 8080
 
